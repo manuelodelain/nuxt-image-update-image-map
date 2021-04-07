@@ -1,73 +1,59 @@
 <template>
-  <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">
-        nuxt-image-update-image-map
-      </h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
+  <div>
+    <nuxt-link to="/page">Page link</nuxt-link>
+    <div v-if="modalData" class="modal">
+      <section>
+        <button @click="onCloseClick">Close</button>
+        <h1>{{ modalData.title }}</h1>
+        <nuxt-picture v-bind="modalData.image" />
+      </section>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      modalData: null
+    }
+  },
+  created() {
+    this.$router.beforeResolve((to, from, next) => {
+      if (this.$store.state.pageData) {
+        this.modalData = this.$store.state.pageData
+
+        window.history.pushState({}, '', to.path)
+      } else {
+        next()
+      }
+    })
+  },
+  methods: {
+    onCloseClick() {
+      this.modalData = null
+
+      window.history.pushState({}, '', this.$route.path)
+    }
+  }
+}
 </script>
 
 <style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
 }
 
-.title {
-  font-family:
-    'Quicksand',
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+.modal section {
+  padding: 40px;
+  background-color: #fff;
 }
 </style>
